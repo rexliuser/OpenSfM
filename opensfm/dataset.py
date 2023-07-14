@@ -52,6 +52,7 @@ class DataSet(DataSetBase):
         self.load_config()
         self.load_image_list()
         self.load_mask_list()
+        self.load_matching_pairs()
 
     def _config_file(self) -> str:
         return os.path.join(self.data_path, "config.yaml")
@@ -140,6 +141,17 @@ class DataSet(DataSetBase):
         else:
             mask = None
         return mask
+    
+    def load_matching_pairs(self) -> None:
+        """Load matching pairs from matching_pairs.txt"""
+        matching_pairs_file = os.path.join(self.data_path, "matching_pairs.txt")
+        if self.io_handler.isfile(matching_pairs_file):
+            with self.io_handler.open_rt(matching_pairs_file) as fin:
+                lines = fin.read().splitlines()
+            self.matching_pairs = [tuple(l.split(' ')) for l in lines]
+        else:
+            self.matching_pairs = []
+            
 
     def _instances_path(self) -> str:
         return os.path.join(self.data_path, "instances")

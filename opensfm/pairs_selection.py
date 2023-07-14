@@ -655,7 +655,9 @@ def match_candidates_from_metadata(
             vlad_other_cameras,
             {},
         )
-        pairs = d | g | t | o | set(b) | set(v)
+        c = match_custom_pairs(images_ref, images_cand)
+        
+        pairs = d | g | t | o | set(b) | set(v) | c
 
     pairs = ordered_pairs(pairs, images_ref)
 
@@ -669,6 +671,16 @@ def match_candidates_from_metadata(
     }
     return pairs, report
 
+def match_custom_pairs(
+    data: DataSetBase,
+    images_ref: List[str],
+) -> Set[Tuple[str, str]]:
+    matching_pair_list = data.matching_pairs
+    pairs = set()
+    for a,b in matching_pair_list:
+        if a in images_ref and b in images_ref:
+            pairs.add(sorted_pair(a, b))
+    return pairs
 
 def bow_distances(
     image: str, other_images: Iterable[str], histograms: Dict[str, np.ndarray]
